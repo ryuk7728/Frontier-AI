@@ -1,0 +1,44 @@
+{
+  "threshold_used": 0.15,
+  "samples_analyzed": 60000,
+  "pixel_intensity": {
+    "active_mean": 0.7706107263232198,
+    "active_median": 0.9215686274509803,
+    "active_p10": 0.3058823529411765,
+    "active_p25": 0.5568627450980392,
+    "active_p75": 0.9921568627450981,
+    "active_p90": 0.996078431372549,
+    "max": 1.0
+  },
+  "stroke_shape": {
+    "run_length_median": 4.0,
+    "run_length_p75": 6.0,
+    "run_length_p90": 10.0,
+    "local_width_median": 4.0,
+    "local_width_p25": 3.0,
+    "local_width_p75": 5.0,
+    "local_width_p90": 8.0,
+    "erosion_depth_median": 2.0,
+    "estimated_brush_radius_cells": 0.75
+  },
+  "edge_fade": {
+    "boundary_mean": 0.6949185596554152,
+    "boundary_median": 0.7607843137254902,
+    "interior_mean": 0.9858701826138773,
+    "outside_shell_mean": 0.012888304010871548,
+    "boundary_to_interior_ratio": 0.7048783621926262
+  },
+  "digit_extent": {
+    "bbox_width_median": 16.0,
+    "bbox_height_median": 20.0,
+    "bbox_width_p90": 20.0,
+    "bbox_height_p90": 20.0,
+    "ink_sum_median": 99.87058823529412
+  },
+  "suggested_ui": {
+    "brush_radius_cells": 0.75,
+    "edge_sigma_cells": 0.48280473701331816,
+    "draw_strength": 0.996078431372549,
+    "model_box_size": 20
+  }
+}
