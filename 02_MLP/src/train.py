@@ -3,8 +3,8 @@ import numpy as np
 from .utils import relu_dash,get_accuracy
 
 
-def train(model :NN,X_train,y_train,learning_rate=0.7,epochs=500):
-    losses = []
+def train(model :NN,X_train,y_train,learning_rate=0.3,epochs=600):
+    accuracies = []
     m = X_train.shape[1]
 
     for i in range(epochs):
@@ -13,7 +13,7 @@ def train(model :NN,X_train,y_train,learning_rate=0.7,epochs=500):
 
         dZ2 = y_pred - y_train
         accuracy = get_accuracy(y_pred,y_train)
-        losses.append(accuracy)
+        accuracies.append(accuracy)
 
         dW2 = (1/m)*(dZ2 @ A1.T)
         dB2 = (1/m)*(np.sum(dZ2,axis=1,keepdims=True))
@@ -30,7 +30,7 @@ def train(model :NN,X_train,y_train,learning_rate=0.7,epochs=500):
         if i%10 == 0:
             print(f"Epoch {i}, accuracy is {accuracy}")
 
-    return losses
+    return accuracies
 
         
         
