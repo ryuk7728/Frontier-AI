@@ -8,11 +8,11 @@ from .utils import relu_dash
 
 def dream(steps=100,learning_rate=0.01,no=0):
 
-    X = np.random.uniform(0,0,(28,28))
-    # X[:,0:8] = 0
-    # X[:,22:] = 0
-    # X[0:4,:] = 0
-    # X[24:,:] = 0
+    X = np.random.uniform(0,1,(28,28))
+    X[:,0:8] = 0
+    X[:,22:] = 0
+    X[0:4,:] = 0
+    X[24:,:] = 0
 
     X = X.reshape(784,1)
     
@@ -27,12 +27,12 @@ def dream(steps=100,learning_rate=0.01,no=0):
 
         X = X.reshape((28,28))
 
-        # X[X < 0.2] = 0
+        X[X < 0.2] = 0
 
-        # X[:,0:8] = 0
-        # X[:,22:] = 0
-        # X[0:4,:] = 0
-        # X[24:,:] = 0
+        X[:,0:8] = 0
+        X[:,22:] = 0
+        X[0:4,:] = 0
+        X[24:,:] = 0
 
         X = X.reshape((784,1))
 
