@@ -61,6 +61,6 @@ def dream_until(model,no,target_prob=0.99,max_steps=400,learning_rate=0.02,attem
 
 
 if __name__ == "__main__":
-    actives, X = dream(1000,0.01,5)
+    actives, X = dream(2000,0.01,6)
     plt.imshow(X.reshape(28,28))
     plt.show()
