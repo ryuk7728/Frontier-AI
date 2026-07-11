@@ -5,12 +5,16 @@ class ResidualBlock(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv2d(channel,channel,kernel_size=3,padding=1)
         self.conv2 = nn.Conv2d(channel,channel,kernel_size=3,padding=1)
+        self.bn1 = nn.BatchNorm2d(channel)
+        self.bn2 = nn.BatchNorm2d(channel)
         self.relu = nn.ReLU()
 
     def forward(self,x):
         identity = x
-        x = self.relu(self.conv1(x))
-        x = self.conv2(x) + identity
+        x = self.relu(self.bn1(self.conv1(x)))
+        x = self.bn2(self.conv2(x))
+        x += identity
+        x = self.relu(x)
         return x
 
 class AutoEncoder(nn.Module):
@@ -19,18 +23,12 @@ class AutoEncoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Conv2d(3,16,kernel_size=3,padding=1),
             ResidualBlock(16),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(16,32,kernel_size=3,padding=1),
             ResidualBlock(32),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(32,64,kernel_size=3,padding=1),
             ResidualBlock(64),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Flatten(),
             nn.Linear(64*4*4,256)
