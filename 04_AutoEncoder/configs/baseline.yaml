@@ -1,1 +1,11 @@
-
+# Reference settings represented by main.py CLI defaults.
+latent_sizes: [64, 128, 256, 512, 1024, 3072]
+epochs: 15
+learning_rate: 0.001
+optimizer: AdamW
+weight_decay: 0.00001
+scheduler: OneCycleLR
+batch_size: 128
+workers: 0
+seed: 42
+validation_size: 5000

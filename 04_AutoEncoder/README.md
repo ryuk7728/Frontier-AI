@@ -1,125 +1,48 @@
-# ML Project
+# CIFAR-10 Autoencoder Rate--Distortion Experiment
 
-A clean, modular machine learning project structure designed for reproducibility and ease of use.
+This project measures the tradeoff between latent compression and reconstruction
+quality. A CIFAR-10 image contains `3 x 32 x 32 = 3072` values. For a latent of
+size `z`, the reported compression ratio is `3072 / z` and reconstruction quality
+is measured with whole-test-set PSNR.
 
----
+## Architecture
 
-## Project Structure
+For compressed settings (`z < 3072`), the encoder produces a `48 x 8 x 8 = 3072`
+feature tensor and maps it to a spatial `z/64 x 8 x 8` latent tensor. The decoder
+maps back from that latent. Every other internal activation contains at least 3072
+values, so the configured latent is the only numerical bottleneck. There are no
+encoder-to-decoder skip connections.
 
-```
-project_name/
-│
-├── data/              # Raw and processed datasets
-├── src/               # Core source code (model, training, inference)
-├── configs/           # YAML configuration files for experiments
-├── experiments/       # Logs, results, and metadata for each run
-├── outputs/           # Saved models, plots, and predictions
-│   ├── models/
-│   ├── plots/
-│   └── predictions/
-├── notebooks/         # Exploratory and debugging notebooks
-├── tests/             # Unit tests for src modules
-├── main.py            # Entry point — ties everything together
-├── requirements.txt   # Python dependencies
-└── README.md          # This file
-```
+For `z = 3072`, `PixelUnshuffle(4)` and `PixelShuffle(4)` provide a reversible
+path through a `48 x 8 x 8` latent. Identity-initialized 1x1 projections make the
+no-compression endpoint exact; the CLI records it at epoch 0 without optimization.
 
-### `data/`
-Place your raw datasets here. Processed or intermediate data can also live here in subdirectories (e.g., `data/raw/`, `data/processed/`). This folder is typically excluded from version control via `.gitignore` if data is large — use a data registry or download script instead.
+## Verified result
 
-### `src/`
-The heart of the project. All importable modules live here:
+The controlled 15-epoch sweep uses AdamW, OneCycleLR, learning rate `1e-3`, batch
+size 128, seed 42, 45,000 training images, 5,000 validation images, and the fixed
+10,000-image CIFAR-10 test set. The latent-512 model reached **30.36 dB test PSNR**,
+exceeding the required 27 dB at 6x compression. The reversible 3072 model reached
+79.83 dB (numerical near-identity).
 
-| File | Purpose |
-|------|---------|
-| `model.py` | Model architecture definition |
-| `train.py` | Training loop, loss computation, optimizer logic |
-| `dataset.py` | Dataset class, data loading, and preprocessing |
-| `inference.py` | Prediction and evaluation on new data |
-| `utils.py` | Shared helper functions (logging, metrics, etc.) |
+## Run
 
-Add an `__init__.py` inside `src/` to make it a proper Python package so imports work cleanly across the project.
-
-### `configs/`
-YAML files that define hyperparameters, paths, and experiment settings. One config per experiment keeps runs reproducible and easy to compare. Example: `configs/baseline.yaml`, `configs/lr_sweep.yaml`.
-
-### `experiments/`
-Each run generates a subdirectory here (e.g., `experiments/run_001/`) containing the config used, training logs, and results. Keeps your workspace clean and makes it easy to compare runs.
-
-### `outputs/`
-All artifacts generated during training and inference:
-- `models/` — saved checkpoints (`.pt`, `.pth`, etc.)
-- `plots/` — loss curves, confusion matrices, visualizations
-- `predictions/` — generated outputs from inference
-
-### `notebooks/`
-Jupyter notebooks for data exploration, debugging, and visualization. These are not part of the training pipeline — keep them as scratchpads, not production code.
-
-### `tests/`
-Unit tests for your `src/` modules. Even simple sanity checks (e.g., "does the dataset class return the right shape?") save a lot of debugging time. Run with `pytest`.
-
-### `main.py`
-The single entry point to run the full pipeline. Imports from `src/` and wires everything together — training, evaluation, inference — controlled by config flags or CLI args.
-
----
-
-## Getting Started
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/project-name.git
-cd project-name
-```
-
-### 2. Set up a virtual environment (recommended)
-
-```bash
-python -m venv venv
-source venv/bin/activate        # macOS/Linux
-venv\Scripts\activate           # Windows
-```
-
-### 3. Install dependencies
-
-```bash
+```powershell
 pip install -r requirements.txt
+python dataset_prep.py
+python main.py --mode train --latent-size 512
+python main.py --mode sweep
 ```
 
-### 4. Add your data
+Each run saves its best validation checkpoint, history, test metrics, and an
+original/reconstruction image grid. Sweep mode also saves `sweep_results.json`
+and `compression_vs_psnr.png`.
 
-Place your dataset inside the `data/` directory. Update the paths in your config file under `configs/` accordingly.
+Evaluate a saved model with:
 
-### 5. Configure your run
-
-Edit or create a config file in `configs/`. Set your hyperparameters, data paths, and output directories there.
-
-### 6. Run training
-
-```bash
-python main.py --config configs/baseline.yaml
+```powershell
+python main.py --mode evaluate --checkpoint outputs/latent_512/best.pt
 ```
 
-### 7. Run inference
-
-```bash
-python main.py --config configs/baseline.yaml --mode inference
-```
-
-Outputs (model checkpoints, plots, predictions) will be saved to the `outputs/` directory.
-
----
-
-## Running Tests
-
-```bash
-pytest tests/
-```
-
----
-
-## Notes
-
-- Keep `src/` free of side effects — it's a library, not a script. All execution starts from `main.py`.
-- Commit your config files, not your outputs. Add `outputs/` and `data/` to `.gitignore`.
-- Use `notebooks/` for exploration, but move any reusable logic back into `src/`.
+Only latent sizes divisible by 64 are supported because the latent is spatially
+represented as `channels x 8 x 8`.
