@@ -1,18 +1,34 @@
 import torch.nn as nn
 
+class ResidualBlock(nn.Module):
+    def __init__(self,channel):
+        super().__init__()
+        self.conv1 = nn.Conv2d(channel,channel,kernel_size=3,padding=1)
+        self.conv2 = nn.Conv2d(channel,channel,kernel_size=3,padding=1)
+        self.relu = nn.ReLU()
+
+    def forward(self,x):
+        identity = x
+        x = self.relu(self.conv1(x))
+        x = self.conv2(x) + identity
+        return x
+
 class AutoEncoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.encoder = nn.Sequential(
             nn.Conv2d(3,16,kernel_size=3,padding=1),
+            ResidualBlock(16),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(16,32,kernel_size=3,padding=1),
+            ResidualBlock(32),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(32,64,kernel_size=3,padding=1),
+            ResidualBlock(64),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2,stride=2),
