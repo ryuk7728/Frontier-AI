@@ -22,24 +22,28 @@ class AutoEncoder(nn.Module):
         super().__init__()
         self.encoder = nn.Sequential(
             nn.Conv2d(3,16,kernel_size=3,padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
             ResidualBlock(16),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(16,32,kernel_size=3,padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
             ResidualBlock(32),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Conv2d(32,64,kernel_size=3,padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
             ResidualBlock(64),
             nn.MaxPool2d(kernel_size=2,stride=2),
             nn.Flatten(),
-            nn.Linear(64*4*4,256)
+            nn.Linear(64*4*4,3072)
         )
 
         self.decoder = nn.Sequential(
 
-            nn.Linear(256,1024),
-
+            nn.Linear(3072,1024),
             nn.Unflatten(1,(64,4,4)), # Essentially does a reshape 
-
             nn.ConvTranspose2d( # Converts to 32*8*8 by multiplying each input element by the kernel and shifting by 2 steps to essentially double 4*4 to 8*8
                 64,32,
                 kernel_size=2,
@@ -47,7 +51,6 @@ class AutoEncoder(nn.Module):
             ),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-
             nn.ConvTranspose2d(
                 32,16,
                 kernel_size=2,
@@ -55,13 +58,11 @@ class AutoEncoder(nn.Module):
             ),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-
             nn.ConvTranspose2d(
                 16,3,
                 kernel_size=2,
                 stride=2
             ),
-
             nn.Sigmoid()
             )
 
