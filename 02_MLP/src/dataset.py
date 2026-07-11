@@ -29,6 +29,9 @@ def load_data(path, noise_samples=0, shuffle=True, seed=42):
         X_train = np.hstack((X_train, X_noise))
         y_train = np.hstack((y_train, y_noise))
 
+    print("X Train",X_train.shape)
+    print("X Test",X_test.shape)
+
     if shuffle:
         indices = rng.permutation(X_train.shape[1])
         X_train = X_train[:, indices]
