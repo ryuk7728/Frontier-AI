@@ -1,0 +1,42 @@
+[
+  {
+    "latent_size": 64,
+    "compression_ratio": 48.0,
+    "test_mse": 0.012667301197846731,
+    "test_psnr": 18.973159028538024,
+    "parameters": 663648,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 128,
+    "compression_ratio": 24.0,
+    "test_mse": 0.005052207549413045,
+    "test_psnr": 22.965188165265815,
+    "parameters": 663744,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 256,
+    "compression_ratio": 12.0,
+    "test_mse": 0.004407856219013532,
+    "test_psnr": 23.557725802877236,
+    "parameters": 663936,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 512,
+    "compression_ratio": 6.0,
+    "test_mse": 0.0012857199718554816,
+    "test_psnr": 28.908536098882664,
+    "parameters": 664320,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  }
+]

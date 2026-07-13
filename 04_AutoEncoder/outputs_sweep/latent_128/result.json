@@ -1,0 +1,10 @@
+{
+  "latent_size": 128,
+  "compression_ratio": 24.0,
+  "test_mse": 0.004155846458673477,
+  "test_psnr": 23.8134050620212,
+  "parameters": 949877,
+  "epochs": 15,
+  "learning_rate": 0.001,
+  "seed": 42
+}

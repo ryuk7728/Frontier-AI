@@ -1,48 +1,48 @@
-# CIFAR-10 Autoencoder Rate--Distortion Experiment
+# CIFAR-10 Autoencoder Compression Experiment
 
-This project measures the tradeoff between latent compression and reconstruction
-quality. A CIFAR-10 image contains `3 x 32 x 32 = 3072` values. For a latent of
-size `z`, the reported compression ratio is `3072 / z` and reconstruction quality
-is measured with whole-test-set PSNR.
+This project trains the same autoencoder with different latent sizes and plots
+the tradeoff between compression and reconstruction PSNR.
 
 ## Architecture
 
-For compressed settings (`z < 3072`), the encoder produces a `48 x 8 x 8 = 3072`
-feature tensor and maps it to a spatial `z/64 x 8 x 8` latent tensor. The decoder
-maps back from that latent. Every other internal activation contains at least 3072
-values, so the configured latent is the only numerical bottleneck. There are no
-encoder-to-decoder skip connections.
+```text
+3 x 32 x 32
+-> 16 x 32 x 32
+-> residual block
+-> 64 x 16 x 16
+-> residual block
+-> 64 x 8 x 8
+-> flatten 4096
+-> latent
+```
 
-For `z = 3072`, `PixelUnshuffle(4)` and `PixelShuffle(4)` provide a reversible
-path through a `48 x 8 x 8` latent. Identity-initialized 1x1 projections make the
-no-compression endpoint exact; the CLI records it at epoch 0 without optimization.
+The decoder starts with `Linear(latent_size, 4096)`, reshapes to `64 x 8 x 8`,
+and upsamples back to `3 x 32 x 32`.
 
-## Verified result
-
-The controlled 15-epoch sweep uses AdamW, OneCycleLR, learning rate `1e-3`, batch
-size 128, seed 42, 45,000 training images, 5,000 validation images, and the fixed
-10,000-image CIFAR-10 test set. The latent-512 model reached **30.36 dB test PSNR**,
-exceeding the required 27 dB at 6x compression. The reversible 3072 model reached
-79.83 dB (numerical near-identity).
+The pre-latent and post-latent representations both contain 4096 values. This
+means a latent size of 3072 no longer passes through the old hidden 1024-value
+bottleneck. There are no encoder-to-decoder skip connections.
 
 ## Run
 
+Download CIFAR-10 if needed:
+
 ```powershell
-pip install -r requirements.txt
 python dataset_prep.py
-python main.py --mode train --latent-size 512
-python main.py --mode sweep
 ```
 
-Each run saves its best validation checkpoint, history, test metrics, and an
-original/reconstruction image grid. Sweep mode also saves `sweep_results.json`
-and `compression_vs_psnr.png`.
-
-Evaluate a saved model with:
+Edit `LATENT_SIZES`, `EPOCHS`, `LEARNING_RATE`, or `BATCH_SIZE` at the top of
+`main.py`, then run:
 
 ```powershell
-python main.py --mode evaluate --checkpoint outputs/latent_512/best.pt
+python main.py
 ```
 
-Only latent sizes divisible by 64 are supported because the latent is spatially
-represented as `channels x 8 x 8`.
+The script writes:
+
+- `results.json`
+- `compression_vs_psnr.png`
+
+Compression is calculated as `3072 / latent_size`. Test PSNR is calculated from
+the reconstruction MSE. The latent-512 target for this experiment is at least
+27 dB.

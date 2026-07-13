@@ -1,6 +1,7 @@
 import torch
+import torch.nn as nn
 
-from src.model import AutoEncoder
+from src.model import AutoEncoder, ResidualBlock
 
 
 def test_output_shape_matches_input():
@@ -10,14 +11,17 @@ def test_output_shape_matches_input():
         assert model(images).shape == images.shape
 
 
-def test_latent_is_the_only_internal_numerical_bottleneck():
-    for latent_size in (64, 512, 3072):
-        model = AutoEncoder(latent_size)
-        assert model.pre_latent_values >= latent_size
-        assert model.to_latent.out_channels * 8 * 8 == latent_size
-        assert model.from_latent.in_channels * 8 * 8 == latent_size
+def test_prelatent_has_4096_values():
+    model = AutoEncoder(latent_size=3072)
+    encoder_linear = next(layer for layer in model.encoder if isinstance(layer, nn.Linear))
+    decoder_linear = next(layer for layer in model.decoder if isinstance(layer, nn.Linear))
+    assert encoder_linear.in_features == 4096
+    assert encoder_linear.out_features == 3072
+    assert decoder_linear.in_features == 3072
+    assert decoder_linear.out_features == 4096
 
 
-def test_compression_ratio():
-    assert AutoEncoder(512).compression_ratio == 6.0
-    assert AutoEncoder(3072).compression_ratio == 1.0
+def test_encoder_uses_residual_blocks():
+    model = AutoEncoder()
+    residual_blocks = [layer for layer in model.encoder if isinstance(layer, ResidualBlock)]
+    assert len(residual_blocks) == 2

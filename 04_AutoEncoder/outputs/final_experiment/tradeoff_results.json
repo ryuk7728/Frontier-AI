@@ -1,0 +1,62 @@
+[
+  {
+    "latent_size": 64,
+    "compression_ratio": 48.0,
+    "test_mse": 0.007330723953247071,
+    "test_psnr": 21.348531340389595,
+    "parameters": 949780,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 128,
+    "compression_ratio": 24.0,
+    "test_mse": 0.004155846458673477,
+    "test_psnr": 23.8134050620212,
+    "parameters": 949877,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 256,
+    "compression_ratio": 12.0,
+    "test_mse": 0.002102998101711273,
+    "test_psnr": 26.771611193330283,
+    "parameters": 950071,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 512,
+    "compression_ratio": 6.0,
+    "test_mse": 0.0009200117252767086,
+    "test_psnr": 30.362066376647448,
+    "parameters": 950459,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 1024,
+    "compression_ratio": 3.0,
+    "test_mse": 0.0006377124272286892,
+    "test_psnr": 31.953751197474823,
+    "parameters": 951235,
+    "epochs": 15,
+    "learning_rate": 0.001,
+    "seed": 42
+  },
+  {
+    "latent_size": 3072,
+    "compression_ratio": 1.0,
+    "test_mse": 1.0392922668719015e-08,
+    "test_psnr": 79.83262304184302,
+    "parameters": 4608,
+    "epochs": 0,
+    "learning_rate": 0.001,
+    "seed": 42
+  }
+]
