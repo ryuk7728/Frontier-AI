@@ -1,9 +1,10 @@
 import json
+import os
 
 import torch
 
 from src.dataset import load_data
-from src.inference import plot_results
+from src.inference import plot_results, save_reconstructions
 from src.model import AutoEncoder
 from src.train import evaluate, train
 
@@ -24,6 +25,8 @@ def main():
         model = AutoEncoder(latent_size).to(device)
         train(model, train_loader, EPOCHS, LEARNING_RATE)
         mse, test_psnr = evaluate(model, test_loader)
+        torch.save(model.state_dict(), f"outputs/models/latent_{latent_size}.pt")
+        save_reconstructions(model, test_loader, latent_size, device)
 
         result = {
             "latent_size": latent_size,
@@ -34,7 +37,7 @@ def main():
         results.append(result)
         print(f"Test MSE: {mse:.6f}, Test PSNR: {test_psnr:.3f} dB")
 
-    with open("results.json", "w") as file:
+    with open("outputs/predictions/results.json", "w") as file:
         json.dump(results, file, indent=2)
 
     plot_results(results)

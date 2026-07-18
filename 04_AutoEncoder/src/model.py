@@ -28,13 +28,15 @@ class AutoEncoder(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(),
             ResidualBlock(16),
-            nn.MaxPool2d(kernel_size=2, stride=2),
 
-            nn.Conv2d(16, 64, kernel_size=3, padding=1),
+            nn.Conv2d(16, 64, kernel_size=4, stride=2, padding=1), #Learned downsampling, this kernel config halves the no. of dims
             nn.BatchNorm2d(64),
             nn.ReLU(),
             ResidualBlock(64),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(64, 64, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
 
             nn.Flatten(),
             nn.Linear(64 * 8 * 8, latent_size),
